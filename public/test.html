@@ -1,0 +1,99 @@
+<html>
+	<head>
+		<title>Gametest</title>
+		<script type="text/javascript" src="js/lib/raphael.min.152.js"></script>
+		<script type="text/javascript" src="js/lib/jquery.min.151.js"></script>
+		<script type="text/javascript" src="js/lib/base.js"></script>
+
+
+	</head>
+	<body>
+		<div id="canvas"></div>
+
+<script>
+	var Country = function(name, path, paper, x, y, color) {
+		var element,
+			clicked;
+
+		draw();
+		initObservers();
+
+		function draw() {
+			var pathString = '';
+			for(var i=0; i<path.length; ++i) {
+				var c = path[i];
+				if (c[0] === 'move') {
+					pathString += 'M' + (x+c[1]) + ' ' + (y+c[2]);
+				} else {
+					pathString += 'L' + (x+c[1]) + ' ' + (y+c[2]);
+				}
+			}
+
+			element = paper.path(pathString);
+			element.attr('stroke', color).attr('fill', '#fff').scale(1,1);
+		};
+		
+		function initObservers() {
+			$(element.node).hover(function(event) {
+				enlarge();
+			}, function(event) {
+				if (clicked) { return; }
+				smaller();
+			})
+			.click(function(event) {
+				clicked = !clicked;
+			});
+		}
+
+		function smaller() {
+			element.animate({
+				scale: [1,1],
+				fill: '#fff',
+				'z-index': 1000
+			}, 350, 'bounce');
+		}
+
+		function enlarge() {
+			element.animate({
+				scale: [1.2,1.2],
+				fill: '#f6f6f6'
+			}, 350, 'bounce').toFront();
+		}
+
+		function unselect() {
+			clicked = false;
+			smaller();
+		}
+
+		function connectedTo() {
+			//TODO: argumetns are countries
+		}
+
+		return {
+			connectedTo: connectedTo,
+			unselect:    unselect
+		};
+	};
+
+	var paper = Raphael("canvas", 600, 400);
+	
+	var test = Country('testcountry', [
+		['move', 5, 5],
+		['line', 65, 5],
+		['line', 55, 80],
+		['line', 35, 76],
+		['line', 5, 15],
+		['line', 5, 5]
+	], paper, 100, 100, '#000');
+	var test2 = Country('testcountry', [
+		['move', 65, 5],
+		['line', 56, 80],
+		['line', 80, 80],
+		['line', 92, 70],
+		['line', 76, 2],
+		['line', 76, -40],
+		['line', 65, 5],
+	], paper, 100, 100, '#000');
+</script>
+	</body>
+</html>
